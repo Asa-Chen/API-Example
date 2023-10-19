@@ -3,6 +3,22 @@ const mqtt = require('mqtt');
 const bodyParser = require('body-parser');
 const WebSocket = require('ws');
 const AtlasService = require('./services/atlas.service');
+const { createLogger, format, transports } = require('winston');
+
+const logLevels = {
+    fatal: 0,
+    warn: 1,
+    info: 3,
+}
+
+const logger = createLogger({
+    levels: logLevels,
+    format: format.combine(format.timestamp(), format.json()),
+    transports: new transports.Console(),
+});
+
+
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,6 +50,7 @@ const mqttClient = mqtt.connect(mqttConnectURL, {
 
 mqttClient.on('connect', () => {
     console.log('MQTT Connection: Established.')
+    logger.info("MQTT Connection: Success.");
 })
 
 mqttClient.subscribe([topic], () => {
