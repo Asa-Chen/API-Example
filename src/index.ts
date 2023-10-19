@@ -1,8 +1,8 @@
 const express = require('express');
 const mqtt = require('mqtt');
 const bodyParser = require('body-parser');
-const WebSocket = require('ws');
-const AtlasService = require('./services/atlas.service');
+import WebSocket from 'ws';
+const AtlasService = require('../src/services/atlas.service');
 const { createLogger, format, transports } = require('winston');
 
 const logLevels = {
@@ -28,7 +28,7 @@ app.use(
     })
 );
 const port = 8081;
-const routes = require('./routes/atlas.routes');
+const routes = require('../src/routes/atlas.routes');
 app.use('/', routes);
 const httpServer = app.listen(port, () => {
     console.log(`App is now listening on port ${port}`);
@@ -69,10 +69,10 @@ httpServer.on('upgrade', (req, socket, head) => {
         console.log("Socket Activity");
         const service = new AtlasService.atlasService();
         ws.on('message', async (message) => {
-            let parsedMessage = JSON.parse(message);
+            const parsedMessage = JSON.parse(message.toString());
             console.log(parsedMessage);
             if (parsedMessage.message === 'room') {
-                let response  = '{' +
+                const response  = '{' +
                     '"RoomName": ' + '"107",\n' +
                     '"Status": ' + '"Free",' + '\n' +
                     '"Building": ' + '"Stocker"\n' +
@@ -81,7 +81,7 @@ httpServer.on('upgrade', (req, socket, head) => {
             }
         });
         ws.on('close', () => {
-            //Nothing
+            // Nothing
             console.log("Socket Closed")
         });
     })
